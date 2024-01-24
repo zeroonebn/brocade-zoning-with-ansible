@@ -1,0 +1,23 @@
+- hosts: localhost                           # we don't use inventory for the switches
+  connection: local                          # Run everything on the control node
+  collections:
+  - brocade.fos                              # Reference the brocade.fos collection
+  gather_facts: False                        # We don't need to gather facts
+  vars_prompt:                               # We don't store passwords so prompt switch password
+  - name: brocade_password
+    prompt: Enter Brocade password
+
+  tasks:
+  - name: Remove zone from configuration     # Descriptive name for the task
+    brocade_zoning_cfg:
+      credential:
+        fos_ip_addr: switch_name_or_ip       # CHANGEME host name or IP address of the switch
+        fos_user_name: admin                 # CHANGEME username to connect to the switch
+        fos_password: "{{brocade_password}}" # Use the prompted password
+        https: False                         # Set to True to use https instead of http
+      vfid: -1                               # CHANGEME use the logical switch ID if activated
+      members_remove_only: true              # If not specified or false, all zones already in the configuration will be removed
+      cfgs:
+      - name: CFG                            # CHANGEME name of the configuration
+        members:
+        - ALIAS_1_ALIAS_2                    # CHANGEME zone to add to the configuration
